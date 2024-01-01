@@ -1,0 +1,414 @@
+import java.util.*;
+import java.io.*;
+
+// Kelas untuk merepresentasikan produk
+class Product {
+    private String name;
+    private int price;
+
+    // Konstruktor
+    public Product(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    // Getter dan setter
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+}
+
+// Kelas untuk merepresentasikan pengguna
+class User {
+    private String name;
+    private String nim;
+    private String username;
+    private String password;
+    private int saldo;
+    private String alamat;
+
+    // Konstruktor
+    public User(String name, String nim, String username, String password, int saldo, String alamat) {
+        this.name = name;
+        this.nim = nim;
+        this.username = username;
+        this.password = password;
+        this.saldo = saldo;
+        this.alamat = alamat;
+    }
+
+    // Getter dan setter
+    public String getName() {
+        return name;
+    }
+
+    public String getNim() {
+        return nim;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getSaldo() {
+        return saldo;
+    }
+
+    public String getAlamat() {
+        return alamat;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNim(String nim) {
+        this.nim = nim;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setSaldo(int saldo) {
+        this.saldo = saldo;
+    }
+
+    public void setAlamat(String alamat) {
+        this.alamat = alamat;
+    }
+}
+
+// Kelas untuk merepresentasikan aplikasi e-commerce
+class EcommerceApp {
+    // Daftar produk yang tersedia
+    private static List<Product> products = new ArrayList<>();
+
+    // Daftar pengguna yang terdaftar
+    private static List<User> users = new ArrayList<>();
+
+    // Pengguna yang sedang login
+    private static User currentUser = null;
+
+    // Scanner untuk membaca input
+    private static Scanner sc = new Scanner(System.in);
+
+    // Fungsi untuk menampilkan menu utama
+    public static void displayMainMenu() {
+        System.out.println("=== Menu Utama ===");
+        System.out.println("1. Daftar akun");
+        System.out.println("2. Login");
+        System.out.println("3. Exit");
+        System.out.println("Masukkan pilihan Anda: ");
+    }
+
+    // Fungsi untuk menampilkan menu setelah login
+    public static void displayLoginMenu() {
+        System.out.println("=== Menu Setelah Login ===");
+        System.out.println("1. Tambah saldo");
+        System.out.println("2. Beli produk");
+        System.out.println("3. Cek saldo");
+        System.out.println("4. Logout");
+        System.out.println("Masukkan pilihan Anda: ");
+    }
+
+    // Fungsi untuk menampilkan daftar produk
+    public static void displayProducts() {
+        System.out.println("=== Daftar Produk ===");
+        for (int i = 0; i < products.size(); i++) {
+            System.out.println((i+1) + ". " + products.get(i).getName() + " - Rp. " + products.get(i).getPrice());
+        }
+    }
+
+    // Fungsi untuk melakukan registrasi akun baru
+    public static void registerAccount() {
+        System.out.println("=== Registrasi Akun ===");
+        System.out.println("Masukkan nama: ");
+        String name = sc.nextLine();
+        System.out.println("Masukkan nim: ");
+        String nim = sc.nextLine();
+        System.out.println("Masukkan alamat: ");
+        String alamat = sc.nextLine();
+        System.out.println("Masukkan username: ");
+        String username = sc.nextLine();
+        System.out.println("Masukkan password: ");
+        String password = sc.nextLine();
+        int saldo = 0;
+
+        // Membuat objek pengguna baru
+        User newUser = new User(name, nim, username, password, saldo, alamat);
+
+        // Menambahkan objek pengguna baru ke daftar pengguna
+        users.add(newUser);
+
+        // Menyimpan objek pengguna baru ke file txt
+        saveUsersToFile();
+
+        System.out.println("Akun berhasil dibuat. Silakan login untuk melanjutkan.");
+    }
+
+    // Fungsi untuk menyimpan data pengguna ke dalam file txt
+    public static void saveUsersToFile() {
+        try {
+            FileWriter file = new FileWriter("users.txt");
+            for (User user : users) {
+                file.write(user.getName() + " " + user.getNim() + " " + user.getUsername() + " " +
+                        user.getPassword() + " " + user.getSaldo() + " " + user.getAlamat() + "\n");
+            }
+            file.close();
+        } catch (IOException e) {
+            System.out.println("Terjadi kesalahan saat menyimpan data pengguna.");
+            e.printStackTrace();
+        }
+    }
+
+    // Fungsi untuk melakukan login
+    public static void login() {
+        System.out.println("=== Login ===");
+        System.out.println("Masukkan username: ");
+        String username = sc.nextLine();
+        System.out.println("Masukkan password: ");
+        String password = sc.nextLine();
+
+        // Mencari objek pengguna yang sesuai dengan username dan password
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                // Jika ditemukan, maka mengatur pengguna saat ini
+                currentUser = user;
+                System.out.println("Login berhasil. Selamat datang, " + currentUser.getName() + ".");
+                return;
+            }
+        }
+
+        // Jika tidak ditemukan, maka menampilkan pesan gagal
+        System.out.println("Login gagal. Username atau password salah.");
+    }
+
+    // Fungsi untuk menambah saldo pada akun
+    public static void addSaldo() {
+        System.out.println("Masukkan jumlah saldo yang ingin ditambahkan: Rp. ");
+        int saldo = sc.nextInt();
+        sc.nextLine();
+
+        // Menambahkan saldo ke pengguna saat ini
+        currentUser.setSaldo(currentUser.getSaldo() + saldo);
+
+        // Memperbarui file txt dengan saldo baru
+        saveUsersToFile();
+
+        System.out.println("Saldo berhasil ditambahkan. Saldo Anda saat ini: Rp. " + currentUser.getSaldo());
+    }
+
+    // Fungsi untuk melakukan pembelian
+    public static void purchase() {
+        displayProducts();
+        System.out.println("Masukkan nomor produk yang ingin dibeli (0 untuk selesai): ");
+        int productNumber = sc.nextInt();
+        sc.nextLine();
+
+        // Membuat daftar keranjang belanja
+        List<Product> cart = new ArrayList<>();
+
+        // Menambahkan produk ke keranjang belanja
+        while (productNumber != 0) {
+            if (productNumber >= 1 && productNumber <= products.size()) {
+                cart.add(products.get(productNumber-1));
+            } else {
+                System.out.println("Nomor produk tidak valid.");
+            }
+
+            System.out.println("Masukkan nomor produk yang ingin dibeli (0 untuk selesai): ");
+            productNumber = sc.nextInt();
+            sc.nextLine();
+        }
+
+        // Menghitung total harga
+        int totalHarga = 0;
+        for (Product product : cart) {
+            totalHarga += product.getPrice();
+        }
+
+        // Menggunakan voucher
+        System.out.println("Apakah Anda memiliki voucher? (y/n)");
+        String voucher = sc.nextLine();
+        if (voucher.equalsIgnoreCase("y")) {
+            System.out.println("Masukkan kode voucher: ");
+            String kode = sc.nextLine();
+            // Misalkan kode voucher yang valid adalah "DISKON10"
+            if (kode.equalsIgnoreCase("DISKON10")) {
+                // Memberikan diskon 10% dari total harga
+                totalHarga = (int) (totalHarga * 0.9);
+                System.out.println("Anda mendapatkan diskon 10%. Total harga setelah diskon: Rp. " + totalHarga);
+            } else {
+                System.out.println("Kode voucher tidak valid.");
+            }
+        }
+
+        // Mengecek saldo cukup atau tidak
+        if (currentUser.getSaldo() >= totalHarga) {
+            // Jika saldo cukup, maka mengurangi saldo dengan total harga
+            currentUser.setSaldo(currentUser.getSaldo() - totalHarga);
+
+            // Memperbarui file txt dengan saldo baru
+            saveUsersToFile();
+
+            // Menampilkan pesan berhasil
+            System.out.println("Pembelian berhasil. Berikut adalah produk yang Anda beli:");
+            for (Product product : cart) {
+                System.out.println("- " + product.getName() + " - Rp. " + product.getPrice());
+            }
+            System.out.println("Saldo Anda saat ini: Rp. " + currentUser.getSaldo());
+        } else {
+            // Jika saldo tidak cukup, maka menampilkan pesan gagal
+            System.out.println("Pembelian gagal. Saldo Anda tidak cukup. Silakan tambah saldo terlebih dahulu.");
+        }
+    }
+
+    // Fungsi untuk menampilkan saldo
+    public static void displaySaldo() {
+        System.out.println("Saldo Anda saat ini: Rp. " + currentUser.getSaldo());
+    }
+
+    // Fungsi untuk melakukan logout
+    public static void logout() {
+        // Mengatur pengguna saat ini menjadi null
+        currentUser = null;
+        System.out.println("Anda telah logout. Terima kasih telah menggunakan aplikasi ini.");
+    }
+
+    // Fungsi utama untuk menjalankan program
+    public static void main(String[] args) {
+        // Membaca file txt dan menyimpan objek pengguna ke daftar pengguna
+        try {
+            FileReader file = new FileReader("users.txt");
+            BufferedReader reader = new BufferedReader(file);
+            String line = reader.readLine();
+            while (line != null) {
+                String[] data = line.split(" ");
+                if (data.length >= 6) {
+                    String name = data[0];
+                    String nim = data[1];
+                    String username = data[2];
+                    String password = data[3];
+                    int saldo = Integer.parseInt(data[4]);
+                    String alamat = data[5];
+                    User user = new User(name, nim, username, password, saldo, alamat);
+                    users.add(user);
+                } else {
+                    System.out.println("Data tidak lengkap: " + line);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+            file.close();
+        } catch (IOException e) {
+            System.out.println("File users.txt belum ada atau terjadi kesalahan saat membaca file.");
+        }
+
+        // Membuat beberapa objek produk dan menambahkannya ke daftar produk
+        Product tv = new Product("TV", 1000000);
+        Product laptop = new Product("Laptop", 5000000);
+        Product smartphone = new Product("Smartphone", 3000000);
+        Product kamera = new Product("Kamera", 2000000);
+        Product headset = new Product("Headset", 500000);
+        Product printer = new Product("Printer", 1500000);
+        Product speaker = new Product("Speaker", 800000);
+        Product monitor = new Product("Monitor", 2500000);
+        Product mouse = new Product("Mouse", 200000);
+        Product keyboard = new Product("Keyboard", 300000);
+
+        products.add(tv);
+        products.add(laptop);
+        products.add(smartphone);
+        products.add(kamera);
+        products.add(headset);
+        products.add(printer);
+        products.add(speaker);
+        products.add(monitor);
+        products.add(mouse);
+        products.add(keyboard);
+
+        // Menampilkan menu utama
+        displayMainMenu();
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        // Melakukan aksi sesuai dengan pilihan
+        while (choice != 3) {
+            switch (choice) {
+                case 1:
+                    // Registrasi akun
+                    registerAccount();
+                    break;
+                case 2:
+                    // Login
+                    login();
+                    // Jika login berhasil, maka menampilkan menu setelah login
+                    if (currentUser != null) {
+                        displayLoginMenu();
+                        int loginChoice = sc.nextInt();
+                        sc.nextLine();
+                        // Melakukan aksi sesuai dengan pilihan
+                        while (loginChoice != 4) {
+                            switch (loginChoice) {
+                                case 1:
+                                    // Tambah saldo
+                                    addSaldo();
+                                    break;
+                                case 2:
+                                    // Beli produk
+                                    purchase();
+                                    break;
+                                case 3:
+                                    // Cek saldo
+                                    displaySaldo();
+                                    break;
+                                default:
+                                    // Pilihan tidak valid
+                                    System.out.println("Pilihan tidak valid. Silakan masukkan lagi.");
+                                    break;
+                            }
+                            // Menampilkan menu setelah login lagi
+                            displayLoginMenu();
+                            loginChoice = sc.nextInt();
+                            sc.nextLine();
+                        }
+                        // Logout
+                        logout();
+                    }
+                    break;
+                default:
+                    // Pilihan tidak valid
+                    System.out.println("Pilihan tidak valid. Silakan masukkan lagi.");
+                    break;
+            }
+            // Menampilkan menu utama lagi
+            displayMainMenu();
+            choice = sc.nextInt();
+            sc.nextLine();
+        }
+
+        // Exit
+        System.out.println("Terima kasih telah menggunakan aplikasi ini. Sampai jumpa.");
+    }
+}
